@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>GTD App - The Pitch</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        .deck {
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+        }
+        
+        .slide {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 30px;
+            scroll-snap-align: start;
+            text-align: center;
+        }
+        
+        .slide-number {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #888;
+        }
+        
+        /* Slide styles */
+        .slide h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .slide h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+        
+        .slide p {
+            font-size: 1.2rem;
+            color: #888;
+            max-width: 350px;
+            line-height: 1.5;
+        }
+        
+        .slide .emoji {
+            font-size: 5rem;
+            margin-bottom: 30px;
+        }
+        
+        .slide .big-emoji {
+            font-size: 8rem;
+            margin-bottom: 20px;
+        }
+        
+        /* Colors */
+        .slide.blue { background: linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%); }
+        .slide.green { background: linear-gradient(135deg, #30d158 0%, #34c759 100%); color: #000; }
+        .slide.orange { background: linear-gradient(135deg, #ff9f0a 0%, #ff6b00 100%); color: #000; }
+        .slide.red { background: linear-gradient(135deg, #ff453a 0%, #ff6b6b 100%); }
+        .slide.purple { background: linear-gradient(135deg, #bf5af2 0%, #5e5ce6 100%); }
+        .slide.dark { background: #111; }
+        
+        .slide.blue p, .slide.purple p, .slide.red p { color: rgba(255,255,255,0.8); }
+        .slide.green p, .slide.orange p { color: rgba(0,0,0,0.7); }
+        
+        /* Special elements */
+        .flow-box {
+            background: rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 20px 30px;
+            margin: 10px 0;
+            font-size: 1.1rem;
+            width: 100%;
+            max-width: 320px;
+        }
+        
+        .slide.green .flow-box,
+        .slide.orange .flow-box {
+            background: rgba(0,0,0,0.1);
+        }
+        
+        .arrow-down {
+            font-size: 2rem;
+            margin: 10px 0;
+            opacity: 0.5;
+        }
+        
+        .feature-list {
+            text-align: left;
+            font-size: 1.1rem;
+            line-height: 2;
+        }
+        
+        .feature-list li {
+            list-style: none;
+            margin-bottom: 10px;
+        }
+        
+        .checkmark {
+            color: #30d158;
+            margin-right: 10px;
+        }
+        
+        .x-mark {
+            color: #ff453a;
+            margin-right: 10px;
+        }
+        
+        .vs-box {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .vs-item {
+            flex: 1;
+            background: rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 20px;
+        }
+        
+        .vs-item.bad {
+            border: 2px solid #ff453a;
+        }
+        
+        .vs-item.good {
+            border: 2px solid #30d158;
+        }
+        
+        .vs-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            opacity: 0.7;
+        }
+        
+        .phase-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 5px;
+        }
+        
+        .phase-badge.p1 { background: #30d158; color: #000; }
+        .phase-badge.p2 { background: #ff9f0a; color: #000; }
+        .phase-badge.p3 { background: #5e5ce6; }
+        
+        .swipe-hint {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #555;
+            font-size: 0.85rem;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+        }
+        
+        .quote {
+            font-style: italic;
+            font-size: 1.3rem;
+            max-width: 320px;
+            line-height: 1.5;
+        }
+        
+        .quote-author {
+            margin-top: 15px;
+            font-size: 1rem;
+            opacity: 0.7;
+        }
+        
+        .diagram {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 350px;
+        }
+        
+        .diagram-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .diagram-box {
+            background: rgba(255,255,255,0.1);
+            padding: 15px 20px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+        }
+        
+        .diagram-arrow {
+            font-size: 1.5rem;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="deck">
+        
+        <!-- Slide 1: Title -->
+        <div class="slide blue">
+            <div class="big-emoji">🧠</div>
+            <h1>Your Second Brain</h1>
+            <p>A GTD app that actually works</p>
+        </div>
+        
+        <!-- Slide 2: The Problem -->
+        <div class="slide dark">
+            <div class="emoji">😫</div>
+            <h2>Your brain is full</h2>
+            <p>Ideas, tasks, projects, promises — all rattling around in your head</p>
+        </div>
+        
+        <!-- Slide 3: The Pain -->
+        <div class="slide red">
+            <div class="emoji">🔥</div>
+            <h2>Things fall through the cracks</h2>
+            <p>You forget stuff. You feel guilty. You can't relax.</p>
+        </div>
+        
+        <!-- Slide 4: Current Solution Sucks -->
+        <div class="slide dark">
+            <div class="emoji">📝</div>
+            <h2>Apps don't help</h2>
+            <p>Too much typing. Too much organizing. You end up with a graveyard of forgotten tasks.</p>
+        </div>
+        
+        <!-- Slide 5: The Dream -->
+        <div class="slide purple">
+            <div class="emoji">✨</div>
+            <h2>What if...</h2>
+            <p>You could just dump thoughts and someone else organized them for you?</p>
+        </div>
+        
+        <!-- Slide 6: Enter Ace -->
+        <div class="slide orange">
+            <div class="big-emoji">🦀</div>
+            <h1>That's me.</h1>
+            <p>I'm Ace. I do the boring work.</p>
+        </div>
+        
+        <!-- Slide 7: How It Works - Overview -->
+        <div class="slide dark">
+            <h2>How it works</h2>
+            <div class="flow-box">📥 You dump</div>
+            <div class="arrow-down">↓</div>
+            <div class="flow-box">🧠 I organize</div>
+            <div class="arrow-down">↓</div>
+            <div class="flow-box">✅ You confirm</div>
+        </div>
+        
+        <!-- Slide 8: Step 1 -->
+        <div class="slide blue">
+            <div class="emoji">📥</div>
+            <h2>Step 1: You Dump</h2>
+            <p>Type whatever's in your head into #brain-dump. No format. No thinking.</p>
+            <div class="flow-box" style="margin-top: 20px; font-style: italic;">
+                "follow up with patrick about nextop"
+            </div>
+        </div>
+        
+        <!-- Slide 9: Step 2 -->
+        <div class="slide green">
+            <div class="emoji">🔍</div>
+            <h2>Step 2: I Parse It</h2>
+            <p>I figure out what you meant. Who's Patrick? What's NextOp? When's it due?</p>
+        </div>
+        
+        <!-- Slide 10: Step 3 -->
+        <div class="slide purple">
+            <div class="emoji">🔗</div>
+            <h2>Step 3: I Connect Dots</h2>
+            <p>I search your projects, contacts, and history. I link everything together.</p>
+        </div>
+        
+        <!-- Slide 11: Step 4 -->
+        <div class="slide orange">
+            <div class="emoji">📝</div>
+            <h2>Step 4: I Pre-Fill</h2>
+            <p>I create a rich task with context, project, time estimate — everything.</p>
+        </div>
+        
+        <!-- Slide 12: Step 5 -->
+        <div class="slide dark">
+            <div class="emoji">🃏</div>
+            <h2>Step 5: Flashcard</h2>
+            <p>You see my work. One tap to confirm. Done.</p>
+            <div class="diagram">
+                <div style="font-weight: 600; margin-bottom: 15px;">"Text Patrick to reschedule"</div>
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <span class="phase-badge p1">⚡ Action</span>
+                    <span class="phase-badge p2">📁 Project</span>
+                    <span class="phase-badge p3">💭 Someday</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 13: The Magic -->
+        <div class="slide green">
+            <div class="emoji">🎯</div>
+            <h2>The Magic</h2>
+            <p>You don't organize.<br>You don't categorize.<br>You just confirm.</p>
+        </div>
+        
+        <!-- Slide 14: What You See -->
+        <div class="slide dark">
+            <div class="emoji">📱</div>
+            <h2>The App</h2>
+            <p>Clean dashboard. Today's tasks. Your projects. Zero clutter.</p>
+        </div>
+        
+        <!-- Slide 15: App is Viewer -->
+        <div class="slide blue">
+            <div class="emoji">👀</div>
+            <h2>App = Viewer</h2>
+            <p>The app shows your lists. I do the thinking behind the scenes.</p>
+        </div>
+        
+        <!-- Slide 16: Discord is Processor -->
+        <div class="slide purple">
+            <div class="emoji">⚙️</div>
+            <h2>Discord = Processor</h2>
+            <p>Process inbox via reactions. I update everything. App stays fresh.</p>
+        </div>
+        
+        <!-- Slide 17: The Flow Diagram -->
+        <div class="slide dark">
+            <h2>The Full Loop</h2>
+            <div class="diagram">
+                <div class="diagram-row">
+                    <div class="diagram-box">🗣️ You</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">💬 Discord</div>
+                </div>
+                <div class="diagram-row">
+                    <div class="diagram-arrow">↓</div>
+                </div>
+                <div class="diagram-row">
+                    <div class="diagram-box">🦀 Ace</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">💾 Genesis</div>
+                </div>
+                <div class="diagram-row">
+                    <div class="diagram-arrow">↓</div>
+                </div>
+                <div class="diagram-row">
+                    <div class="diagram-box">📱 App</div>
+                    <div class="diagram-arrow">→</div>
+                    <div class="diagram-box">👀 You</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 18: Phase 1 -->
+        <div class="slide green">
+            <h2>Phase 1</h2>
+            <p style="color: #000;">What we build first</p>
+            <ul class="feature-list" style="margin-top: 20px; color: #000;">
+                <li><span class="checkmark">✓</span> Brain dump → instant processing</li>
+                <li><span class="checkmark">✓</span> Smart JSON with context</li>
+                <li><span class="checkmark">✓</span> Dashboard app (view-only)</li>
+                <li><span class="checkmark">✓</span> Flashcard processing in Discord</li>
+            </ul>
+        </div>
+        
+        <!-- Slide 19: Phase 2 -->
+        <div class="slide orange">
+            <h2>Phase 2</h2>
+            <p style="color: #000;">Future upgrades</p>
+            <ul class="feature-list" style="margin-top: 20px; color: #000;">
+                <li><span class="checkmark">✓</span> Calendar integration</li>
+                <li><span class="checkmark">✓</span> Process in app (not just Discord)</li>
+                <li><span class="checkmark">✓</span> Voice capture</li>
+                <li><span class="checkmark">✓</span> Offline mode</li>
+            </ul>
+        </div>
+        
+        <!-- Slide 20: Quote -->
+        <div class="slide dark">
+            <div class="quote">"Your brain is for having ideas, not holding them."</div>
+            <div class="quote-author">— David Allen</div>
+        </div>
+        
+        <!-- Slide 21: Next Step -->
+        <div class="slide blue">
+            <div class="emoji">🚀</div>
+            <h2>Next Step</h2>
+            <p>Hand spec to Codex.<br>Build Phase 1.<br>Start using it.</p>
+        </div>
+        
+        <!-- Slide 22: End -->
+        <div class="slide dark">
+            <div class="big-emoji">🦀</div>
+            <h1>Ready?</h1>
+            <p>Let's build this thing.</p>
+        </div>
+        
+    </div>
+    
+    <div class="swipe-hint">Swipe up ↑</div>
+    
+    <script>
+        // Hide swipe hint after first scroll
+        document.querySelector('.deck').addEventListener('scroll', function() {
+            document.querySelector('.swipe-hint').style.display = 'none';
+        }, { once: true });
+    </script>
+</body>
+</html>
