@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain Dump Workflow</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: #000;
+            color: #fff;
+            padding: 20px;
+            line-height: 1.5;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            color: #0a84ff;
+        }
+        
+        .flow {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .step {
+            background: #1c1c1e;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .step-number {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: #0a84ff;
+            color: #fff;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            padding-top: 5px;
+        }
+        
+        .step-desc {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .step-example {
+            background: #2c2c2e;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 12px;
+            font-size: 0.85rem;
+            font-family: 'SF Mono', monospace;
+        }
+        
+        .arrow {
+            text-align: center;
+            color: #555;
+            font-size: 1.5rem;
+            margin: 5px 0;
+        }
+        
+        .decision {
+            background: linear-gradient(135deg, #5e5ce6 0%, #bf5af2 100%);
+            transform: rotate(0deg);
+        }
+        
+        .decision .step-title {
+            color: #fff;
+        }
+        
+        .decision .step-desc {
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .branch {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .branch-item {
+            flex: 1;
+            background: #1c1c1e;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .branch-item.yes { border: 2px solid #30d158; }
+        .branch-item.no { border: 2px solid #ff9f0a; }
+        .branch-item.maybe { border: 2px solid #ff453a; }
+        
+        .branch-label {
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 5px;
+        }
+        
+        .branch-action {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .highlight {
+            background: #1a3a1a;
+            border: 1px solid #30d158;
+        }
+        
+        .ace-badge {
+            display: inline-block;
+            background: #ff9f0a;
+            color: #000;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .user-badge {
+            display: inline-block;
+            background: #0a84ff;
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .search-visual {
+            background: #2c2c2e;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 12px;
+        }
+        
+        .search-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #3c3c3e;
+        }
+        
+        .search-item:last-child {
+            border-bottom: none;
+        }
+        
+        .search-icon {
+            font-size: 1.2rem;
+        }
+        
+        .search-match {
+            color: #30d158;
+            font-size: 0.85rem;
+        }
+        
+        .search-nomatch {
+            color: #555;
+            font-size: 0.85rem;
+        }
+        
+        .final-destinations {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .dest {
+            background: #2c2c2e;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+        
+        .dest-icon {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .section-divider {
+            text-align: center;
+            color: #555;
+            font-size: 0.8rem;
+            margin: 30px 0 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧠 Brain Dump → GTD Workflow</h1>
+    
+    <div class="flow">
+        
+        <!-- Step 1: Input -->
+        <div class="step">
+            <div class="step-number">1</div>
+            <div class="user-badge">YOU</div>
+            <div class="step-title">📥 You Dump</div>
+            <div class="step-desc">Drop anything in #brain-dump. Don't think, just dump.</div>
+            <div class="step-example">"Need to follow up with Patrick about NextOp - conflicts with acupuncture"</div>
+        </div>
+        
+        <div class="arrow">↓</div>
+        
+        <!-- Step 2: Ace Receives -->
+        <div class="step">
+            <div class="step-number">2</div>
+            <div class="ace-badge">ACE</div>
+            <div class="step-title">👀 I Receive & Parse</div>
+            <div class="step-desc">I break down what you said into pieces:</div>
+            <div class="step-example">
+                • WHO: Patrick<br>
+                • WHAT: NextOp meeting<br>
+                • WHY: Conflicts with acupuncture<br>
+                • WHEN: Feb 3 implied
+            </div>
+        </div>
+        
+        <div class="arrow">↓</div>
+        
+        <!-- Step 3: Search Existing -->
+        <div class="step">
+            <div class="step-number">3</div>
+            <div class="ace-badge">ACE</div>
+            <div class="step-title">🔍 I Search Genesis</div>
+            <div class="step-desc">Looking for matches in your existing system...</div>
+            <div class="search-visual">
+                <div class="search-item">
+                    <span class="search-icon">📁</span>
+                    <span class="search-match">✓ Found: "NextOp Partnership" in projects</span>
+                </div>
+                <div class="search-item">
+                    <span class="search-icon">👤</span>
+                    <span class="search-match">✓ Found: Patrick in contacts</span>
+                </div>
+                <div class="search-item">
+                    <span class="search-icon">📅</span>
+                    <span class="search-match">✓ Found: Feb 3 acupuncture in calendar</span>
+                </div>
+                <div class="search-item">
+                    <span class="search-icon">🎯</span>
+                    <span class="search-nomatch">Area: AEA (inferred)</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="arrow">↓</div>
+        
+        <!-- Step 4: Decision -->
+        <div class="step decision">
+            <div class="step-number">4</div>
+            <div class="ace-badge">ACE</div>
+            <div class="step-title">🤔 Am I Confident?</div>
+            <div class="step-desc">Can I categorize this without asking you?</div>
+        </div>
+        
+        <div class="branch">
+            <div class="branch-item yes">
+                <div class="branch-label">HIGH CONFIDENCE</div>
+                <div class="branch-action">→ Pre-fill & queue for flashcard</div>
+            </div>
+            <div class="branch-item maybe">
+                <div class="branch-label">LOW CONFIDENCE</div>
+                <div class="branch-action">→ Ask you questions first</div>
+            </div>
+        </div>
+        
+        <div class="arrow">↓</div>
+        
+        <!-- Step 5a: Questions -->
+        <div class="step" style="border: 2px solid #ff9f0a;">
+            <div class="step-number">5a</div>
+            <div class="ace-badge">ACE</div>
+            <div class="step-title">❓ I Ask (If Unsure)</div>
+            <div class="step-desc">Quick questions in Discord:</div>
+            <div class="step-example">
+                "Got 'Europe trip' — is this the Cologne regional? Active project or someday idea?"
+            </div>
+        </div>
+        
+        <div class="arrow">↓</div>
+        
+        <!-- Step 5b: Pre-fill -->
+        <div class="step highlight">
+            <div class="step-number">5b</div>
+            <div class="ace-badge">ACE</div>
+            <div class="step-title">📝 I Pre-Fill Everything</div>
+            <div class="step-desc">Create rich JSON with all context:</div>
+            <div class="step-example">
+                type: next-action<br>
+                action: "Text Patrick to reschedule"<br>
+                context: @phone<br>
+                project: NextOp Partnership<br>
+                area: AEA<br>
+                due: Feb 1<br>
+                time: 5 min<br>
+                energy: low
+            </div>
+        </div>
+        
+        <div class="arrow">↓</div>
+        
+        <!-- Step 6: Write to Inbox -->
+        <div class="step">
+            <div class="step-number">6</div>
+            <div class="ace-badge">ACE</div>
+            <div class="step-title">💾 Save to Inbox</div>
+            <div class="step-desc">Written to genesis/inbox/captures.json — ready for you to process</div>
+        </div>
+        
+        <div class="section-divider">— You Open The App —</div>
+        
+        <!-- Step 7: Flashcard -->
+        <div class="step" style="border: 2px solid #0a84ff;">
+            <div class="step-number">7</div>
+            <div class="user-badge">YOU</div>
+            <div class="step-title">🃏 Flashcard Appears</div>
+            <div class="step-desc">Pre-filled with my analysis. You just confirm or tweak.</div>
+            <div class="step-example">
+                "Text Patrick to reschedule NextOp"<br><br>
+                [✓ Confirm] [Edit] [Wrong, redo]
+            </div>
+        </div>
+        
+        <div class="arrow">↓</div>
+        
+        <!-- Step 8: Route -->
+        <div class="step">
+            <div class="step-number">8</div>
+            <div class="user-badge">YOU</div>
+            <div class="step-title">📤 Tap to Route</div>
+            <div class="step-desc">One tap sends it to the right place:</div>
+            <div class="final-destinations">
+                <div class="dest">
+                    <div class="dest-icon">⚡</div>
+                    Next Actions
+                </div>
+                <div class="dest">
+                    <div class="dest-icon">📁</div>
+                    Projects
+                </div>
+                <div class="dest">
+                    <div class="dest-icon">⏳</div>
+                    Waiting For
+                </div>
+                <div class="dest">
+                    <div class="dest-icon">💭</div>
+                    Someday
+                </div>
+            </div>
+        </div>
+        
+        <div class="arrow">↓</div>
+        
+        <!-- Step 9: Done -->
+        <div class="step" style="background: linear-gradient(135deg, #1a3a1a 0%, #1c1c1e 100%); border: 2px solid #30d158;">
+            <div class="step-number">✓</div>
+            <div class="step-title">✅ Done</div>
+            <div class="step-desc">Item is filed, linked to project, shows up in Today view when due. Genesis updated. Dashboard synced.</div>
+        </div>
+        
+        <div class="section-divider" style="margin-top: 40px;">— The Magic —</div>
+        
+        <div class="step" style="background: linear-gradient(135deg, #3a1a1a 0%, #1c1c1e 100%);">
+            <div class="step-title">🎯 What Makes This Different</div>
+            <div class="step-desc" style="color: #ccc;">
+                <br>
+                <strong>1. I do the thinking</strong><br>
+                You dump raw thoughts. I parse, search, link, categorize.<br><br>
+                
+                <strong>2. I search your world</strong><br>
+                Existing projects, contacts, calendar — I connect the dots.<br><br>
+                
+                <strong>3. I ask when unsure</strong><br>
+                No guessing. If I'm not confident, I ask before filing.<br><br>
+                
+                <strong>4. You just confirm</strong><br>
+                Flashcard shows my work. One tap to approve.<br><br>
+                
+                <strong>5. Everything stays linked</strong><br>
+                Actions → Projects → Areas. Nothing orphaned.
+            </div>
+        </div>
+        
+    </div>
+</body>
+</html>
